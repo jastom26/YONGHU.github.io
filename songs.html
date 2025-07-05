@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>枝枝的歌单</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 修复后的导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">枝枝的歌单</a>
+            <!-- 添加汉堡菜单按钮 -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="songs.html">歌曲列表</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <h1>枝枝的歌单</h1>
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="搜索歌曲、歌手或风格...">
+        <button id="randomButton" class="btn btn-primary mb-3">随机一首</button>
+        <div id="loading" class="text-center mb-3">加载歌单中...</div>
+        <table id="songTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>歌名</th>
+                    <th>歌手</th>
+                    <th>风格</th>
+                    <th>链接</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <a href="index.html" class="btn btn-secondary">返回主页</a>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
