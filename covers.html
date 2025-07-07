@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SL.枝今山的翻唱</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cover-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .cover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .player-container {
+            position: relative;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .player-container:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        .audio-iframe {
+            width: 100%;
+            height: 80px;
+            border: none;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+        #audioPlayerContainer {
+            margin: 15px 0;
+        }
+        .play-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">枝枝的歌单</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="songs.html">歌曲列表</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="covers.html">翻唱作品</a></li>
+                </ul>
+                <div class="d-flex">
+                    <span class="badge me-2" id="liveStatus">
+                        <i class="bi bi-mic-mute"></i> 直播结束
+                    </span>
+                    <a href="https://live.douyin.com/869132681818" class="btn btn-sm btn-danger" target="_blank">
+                        <i class="bi bi-camera-reels-fill"></i> 进入直播间
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">SL.枝今山的翻唱作品</h1>
+        
+        <!-- 音频播放器 -->
+        <div class="player-container bg-white rounded shadow p-4 mb-4">
+            <div class="d-flex align-items-center mb-3">
+                <img src="myphoto.jpg" alt="主播枝枝" class="rounded-circle me-3" width="60" height="60">
+                <div>
+                    <h3 id="currentSongTitle" class="mb-0">请选择歌曲</h3>
+                    <p id="currentSongArtist" class="mb-0">SL.枝今山</p>
+                </div>
+                <div class="ms-auto">
+                    <span class="badge bg-purple" id="playStatus">停止</span>
+                </div>
+            </div>
+            
+            <!-- 嵌入式播放器容器 -->
+            <div id="audioPlayerContainer">
+                <div class="text-center py-3 text-muted">
+                    <i class="bi bi-music-note-beamed fs-1"></i>
+                    <p>请选择一首歌曲</p>
+                </div>
+            </div>
+            
+            <!-- 播放控制 -->
+            <div class="play-controls">
+                <button id="prevBtn" class="btn btn-outline-purple">
+                    <i class="bi bi-skip-start-fill"></i> 上一首
+                </button>
+                <button id="playBtn" class="btn btn-purple">
+                    <i class="bi bi-play-fill" id="playIcon"></i> 播放
+                </button>
+                <button id="nextBtn" class="btn btn-outline-purple">
+                    <i class="bi bi-skip-end-fill"></i> 下一首
+                </button>
+            </div>
+        </div>
+        
+        <!-- 歌曲列表 -->
+        <div class="row" id="coversList">
+            <div class="col-12 mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4>翻唱歌曲列表</h4>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="coverSearch" placeholder="搜索歌曲...">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 歌曲将通过JS动态加载 -->
+            <div class="col-12 text-center py-5" id="loadingIndicator">
+                <div class="spinner-border text-purple" role="status">
+                    <span class="visually-hidden">加载中...</span>
+                </div>
+                <p class="mt-2">正在加载翻唱作品...</p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-secondary">返回主页</a>
+        </div>
+    </div>
+    
+    <!-- 引入 Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 翻唱作品JS -->
+    <script src="covers.js"></script>
+    
+    <!-- 直播状态检测脚本 -->
+    <script>
+        // 页面加载时检测直播状态
+        document.addEventListener('DOMContentLoaded', detectLiveStatus);
+        
+        // 直播状态检测
+        function detectLiveStatus() {
+            const liveStatus = document.getElementById('liveStatus');
+            
+            if (!liveStatus) return;
+            
+            // 检测直播状态
+            const isLive = checkLiveStatus();
+            
+            if (isLive) {
+                liveStatus.innerHTML = '<i class="bi bi-broadcast-pin"></i> 正在直播';
+                liveStatus.classList.add('bg-danger', 'animate-pulse');
+                liveStatus.classList.remove('bg-secondary');
+            } else {
+                liveStatus.innerHTML = '<i class="bi bi-mic-mute"></i> 直播结束';
+                liveStatus.classList.remove('bg-danger', 'animate-pulse');
+                liveStatus.classList.add('bg-secondary');
+            }
+            
+            // 每5分钟更新一次状态
+            setTimeout(detectLiveStatus, 5 * 60 * 1000);
+        }
+
+        // 检测直播状态
+        function checkLiveStatus() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            
+            // 转换为分钟数
+            const currentMinutes = hours * 60 + minutes;
+            
+            // 定义直播时间段（14:00-15:00 和 18:00-19:30）
+            const livePeriod1 = { start: 14*60, end: 15*60 };
+            const livePeriod2 = { start: 18*60, end: 19*60+30 };
+            
+            return (currentMinutes >= livePeriod1.start && currentMinutes <= livePeriod1.end) ||
+                   (currentMinutes >= livePeriod2.start && currentMinutes <= livePeriod2.end);
+        }
+    </script>
+</body>
+</html>
