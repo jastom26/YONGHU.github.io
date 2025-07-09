@@ -7,6 +7,34 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- 自动跳转代码 -->
+    <script>
+        // 自动跳转确保使用 https 和 www 版本
+        (function() {
+            // 定义目标域名
+            const targetDomain = 'www.jastom26.fun';
+            
+            // 当前访问的域名和协议
+            const currentHost = location.hostname;
+            const currentProtocol = location.protocol;
+            
+            // 需要跳转的情况：
+            // 1. 使用 HTTP 协议
+            // 2. 访问根域名 (jastom26.fun) 而不是 www
+            if (currentHost === 'jastom26.fun' || 
+                currentHost === targetDomain && currentProtocol !== 'https:') {
+                
+                // 构建目标 URL
+                const targetUrl = `https://${targetDomain}${location.pathname}${location.search}${location.hash}`;
+                
+                // 仅在需要时才跳转
+                if (location.href !== targetUrl) {
+                    location.href = targetUrl;
+                }
+            }
+        })();
+    </script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -56,7 +84,10 @@
             </a>
         </div>
         
-        <div id="loading" class="text-center mb-3">加载歌单中...</div>
+        <div id="loading" class="text-center mb-3">
+            加载歌单中...
+            <div class="mt-2 alert alert-warning">域名生效中，如遇加载失败请稍后再试</div>
+        </div>
         
         <!-- 歌曲表格 - 点击整行可复制 -->
         <div class="table-responsive">
@@ -92,7 +123,8 @@
         // 全局变量存储歌曲数据
         let allSongs = [];
         let genreStats = [];
-        const apiUrl = 'https://sheetdb.io/api/v1/ki9gdqgc7ffrr';
+        // 使用CORS代理解决跨域问题
+        const apiUrl = 'https://api.allorigins.win/raw?url=https://sheetdb.io/api/v1/ki9gdqgc7ffrr';
 
         // 页面加载完成后执行
         document.addEventListener('DOMContentLoaded', function() {
@@ -230,8 +262,11 @@
                 console.error('加载歌曲失败:', error);
                 const loading = document.getElementById('loading');
                 if (loading) {
-                    loading.textContent = '加载失败: ' + (error.message || '未知错误');
-                    loading.style.color = 'red';
+                    loading.innerHTML = `<p>加载失败: ${error.message || '未知错误'}</p>
+                    <div class="alert alert-danger mt-2">
+                        加载失败: 可能是域名尚未生效<br>
+                        请稍后再试或使用原始地址访问
+                    </div>`;
                 }
                 showToast('加载歌单失败: ' + (error.message || '未知错误'), 'error');
             }
