@@ -106,7 +106,7 @@
             <h3 class="mb-3">歌单统计</h3>
             <div id="stats" class="text-center">
                 <p>正在加载数据...</p>
-                <div class="mt-2 alert alert-warning">域名生效中，如遇加载失败请稍后再试</div>
+                <div class="mt-2 alert alert-info">正在从Google Sheets加载数据</div>
             </div>
         </div>
     </div>
@@ -186,6 +186,14 @@
                 liveMessage.textContent = '快来直播间和我一起互动吧~';
                 liveBtn.classList.add('btn-light');
                 liveBtn.classList.remove('btn-outline-light');
+                
+                // 添加脉动动画
+                const existingPulse = liveCard.querySelector('.pulse-animation');
+                if (!existingPulse) {
+                    const pulse = document.createElement('div');
+                    pulse.className = 'pulse-animation';
+                    liveCard.appendChild(pulse);
+                }
             } else {
                 liveCard.classList.add('bg-secondary');
                 liveCard.classList.remove('bg-danger');
@@ -193,18 +201,12 @@
                 liveMessage.textContent = '直播时间：14:00-15:00 / 18:00-19:30';
                 liveBtn.classList.add('btn-outline-light');
                 liveBtn.classList.remove('btn-light');
-            }
-            
-            // 添加脉动动画（仅在直播时）
-            const pulseAnimation = liveCard.querySelector('.pulse-animation');
-            if (isLive) {
-                if (!pulseAnimation) {
-                    const pulse = document.createElement('div');
-                    pulse.className = 'pulse-animation';
-                    liveCard.appendChild(pulse);
+                
+                // 移除脉动动画
+                const existingPulse = liveCard.querySelector('.pulse-animation');
+                if (existingPulse) {
+                    existingPulse.remove();
                 }
-            } else if (pulseAnimation) {
-                pulseAnimation.remove();
             }
         }
         
