@@ -104,6 +104,10 @@
             loadSongs();
             setupEventListeners();
             detectLiveStatus(); // 初始化直播状态检测
+            // 鼠标指针动态效果 (仅在 songs.html 页面也需要的话，可以取消注释)
+            // initMouseTrail();
+            // 飘屏动态效果 (仅在 songs.html 页面也需要的话，可以取消注释)
+            // initFloatingEmojis();
         });
 
         // 加载歌曲数据
@@ -295,10 +299,11 @@
 
             try {
                 await navigator.clipboard.writeText(copyText);
-                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (已复制)`, 'success'); // 使用'歌名'
+                // 更新提示语
+                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (已复制到剪贴板，请前往直播间点歌)`, 'success'); 
             } catch (err) {
                 console.error('复制失败:', err);
-                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (复制失败)`, 'error'); // 使用'歌名'
+                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (复制失败，请手动复制)`, 'error'); // 使用'歌名'
             }
         }
 
@@ -313,10 +318,11 @@
 
                     try {
                         await navigator.clipboard.writeText(copyText);
-                        showToast(`已复制：${songName} - ${artistName}`, 'success');
+                        // 更新提示语
+                        showToast(`已复制：${songName} - ${artistName} (已复制到剪贴板，请前往直播间点歌)`, 'success');
                     } catch (err) {
                         console.error('复制失败:', err);
-                        showToast(`复制失败：${songName} - ${artistName}`, 'error');
+                        showToast(`复制失败：${songName} - ${artistName} (复制失败，请手动复制)`, 'error');
                     }
                 });
             });
