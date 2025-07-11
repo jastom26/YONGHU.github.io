@@ -37,7 +37,7 @@
 
         <div class="mb-4 row align-items-center">
             <div class="col-md-6 mb-3 mb-md-0">
-                <input type="text" id="searchInput" class="form-control" placeholder="搜索歌曲名或歌手..." aria-label="搜索歌曲">
+                <input type="text" id="searchInput" class="form-control" placeholder="搜索歌名或歌手..." aria-label="搜索歌曲">
             </div>
             <div class="col-md-4 mb-3 mb-md-0">
                 <select id="genreFilter" class="form-select" aria-label="筛选风格">
@@ -62,12 +62,10 @@
             <table class="table table-hover table-striped" id="songTable" style="display: none;">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">歌曲名</th>
+                        <th scope="col">歌名</th>
                         <th scope="col">歌手</th>
                         <th scope="col">风格</th>
-                        <th scope="col">备注</th>
-                    </tr>
+                        </tr>
                 </thead>
                 <tbody id="songList">
                     </tbody>
@@ -98,7 +96,7 @@
         let currentSortColumn = null;
         let currentSortDirection = 'asc';
 
-        // **已更新为您的GitHub原始CSV文件链接**
+        // GitHub原始CSV文件链接
         const apiUrl = 'https://raw.githubusercontent.com/jastom26/yonghu.github.io/main/SL.%E6%9E%9D%E4%BB%8A%E5%B1%B1%E3%81%AESONGLIST-sheet1.csv';
 
         // 页面加载完成时执行
@@ -157,10 +155,7 @@
                         song['风格'] = '未知风格';
                     }
 
-                    if (!song['备注'] || song['备注'].trim() === '') {
-                        song['备注'] = '-';
-                    }
-
+                    // 由于备注列已移除，此处无需处理备注字段
                     return song;
                 });
 
@@ -229,7 +224,7 @@
             document.querySelectorAll('#songTable th').forEach(header => {
                 header.addEventListener('click', () => {
                     const column = header.getAttribute('scope');
-                    if (column) { // 排除 # 列，因为没有 scope
+                    if (column) { // 排除非排序列
                         sortTable(column);
                     }
                 });
@@ -242,19 +237,20 @@
             songList.innerHTML = ''; // 清空现有列表
 
             if (songsToDisplay.length === 0) {
-                songList.innerHTML = '<tr><td colspan="5" class="text-center">没有找到符合条件的歌曲。</td></tr>';
+                // 修改了colspan从5到3 (歌名、歌手、风格)
+                songList.innerHTML = '<tr><td colspan="3" class="text-center">没有找到符合条件的歌曲。</td></tr>';
                 return;
             }
 
-            songsToDisplay.forEach((song, index) => {
+            songsToDisplay.forEach((song) => { // 移除了index
                 const row = songList.insertRow();
-                row.dataset.songName = song['歌曲名']; // 用于随机播放时获取歌名
-                row.dataset.artistName = song['歌手']; // 用于随机播放时获取歌手名
-                row.insertCell().textContent = index + 1;
-                row.insertCell().textContent = song['歌曲名'];
+                row.dataset.songName = song['歌名']; // 用于复制，使用'歌名'
+                row.dataset.artistName = song['歌手']; // 用于复制
+                // 移除了 # 号的单元格
+                row.insertCell().textContent = song['歌名']; // 使用'歌名'
                 row.insertCell().textContent = song['歌手'];
                 row.insertCell().textContent = song['风格'];
-                row.insertCell().textContent = song['备注'];
+                // 移除了备注的单元格
             });
             addRowClickEvents(); // 重新绑定点击事件
         }
@@ -265,7 +261,7 @@
             const selectedGenre = document.getElementById('genreFilter').value;
 
             const filtered = allSongs.filter(song => {
-                const matchesSearch = (song['歌曲名'] && song['歌曲名'].toLowerCase().includes(searchTerm)) ||
+                const matchesSearch = (song['歌名'] && song['歌名'].toLowerCase().includes(searchTerm)) || // 使用'歌名'
                                       (song['歌手'] && song['歌手'].toLowerCase().includes(searchTerm));
                 const matchesGenre = (selectedGenre === '' || song['风格'] === selectedGenre);
                 return matchesSearch && matchesGenre;
@@ -287,25 +283,41 @@
             });
         }
 
-        // 播放随机歌曲
-        function playRandomSong() {
+        // 播放随机歌曲并复制
+        async function playRandomSong() {
             if (allSongs.length === 0) {
                 showToast('歌单为空，无法随机播放。', 'warning');
                 return;
             }
             const randomIndex = Math.floor(Math.random() * allSongs.length);
             const randomSong = allSongs[randomIndex];
-            showToast(`随机到：${randomSong['歌曲名']} - ${randomSong['歌手']}`, 'success');
+            const copyText = `点歌 - ${randomSong['歌名']} - ${randomSong['歌手']}`; // 使用'歌名'
+
+            try {
+                await navigator.clipboard.writeText(copyText);
+                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (已复制)`, 'success'); // 使用'歌名'
+            } catch (err) {
+                console.error('复制失败:', err);
+                showToast(`随机到：${randomSong['歌名']} - ${randomSong['歌手']} (复制失败)`, 'error'); // 使用'歌名'
+            }
         }
 
-        // 添加表格行点击事件
+        // 添加表格行点击事件并复制
         function addRowClickEvents() {
             const rows = document.querySelectorAll('#songTable tbody tr');
             rows.forEach(row => {
-                row.addEventListener('click', function() {
+                row.addEventListener('click', async function() {
                     const songName = this.dataset.songName;
                     const artistName = this.dataset.artistName;
-                    showToast(`你点击了：${songName} - ${artistName}`, 'info');
+                    const copyText = `点歌 - ${songName} - ${artistName}`;
+
+                    try {
+                        await navigator.clipboard.writeText(copyText);
+                        showToast(`已复制：${songName} - ${artistName}`, 'success');
+                    } catch (err) {
+                        console.error('复制失败:', err);
+                        showToast(`复制失败：${songName} - ${artistName}`, 'error');
+                    }
                 });
             });
         }
@@ -425,7 +437,7 @@
         }
 
 
-        // 新增函数：用于解析CSV文本
+        // 新增函数：用于解析CSV文本 - 动态读取表头
         function parseCSV(csvText) {
             const lines = csvText.split('\n').filter(line => line.trim() !== ''); // 过滤空行
             if (lines.length === 0) return [];
