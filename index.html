@@ -43,6 +43,15 @@
                     <div class="card-body text-center">
                         <h2 class="card-title">欢迎来到枝枝的音乐主页！</h2>
                         <p class="card-text">这里是枝枝的专属音乐空间，你可以在这里找到我的歌单，了解我的直播动态，以及更多关于音乐的分享。</p>
+                        <div class="host-bio text-start mx-auto mt-3" style="max-width: 400px; color: #555;">
+                            <p class="mb-1">@SL.菘蓝社所属正式生</p>
+                            <p class="mb-1">运营 @SL.苦槿旗下Viora企划成员）这里是枝枝，你想听的歌都在这里~</p>
+                            <p class="mb-1">“我肩上是风，风上是闪烁的星辰～"</p>
+                            <p class="mb-1">【午出没】14:00-15:00/18:00-19:30・～・。</p>
+                            <p class="mb-1">【其他时间随机出现】</p>
+                            <p class="mb-1">单推符号：⛰️</p>
+                            <p class="mb-1">）建模：互联网幽澪</p>
+                        </div>
                         <a href="songs.html" class="btn btn-primary mt-3">查看歌单</a>
                     </div>
                 </div>
@@ -102,6 +111,10 @@
             // 首页加载时也尝试加载歌单数据以显示统计
             loadSongsForStats();
             detectLiveStatus(); // 初始化直播状态检测
+
+            // 动态效果初始化
+            initMouseTrail(); // 鼠标指针动态效果
+            initFloatingEmojis(); // 飘屏动态效果
         });
 
         // 仅加载歌曲数据用于统计，不显示表格
@@ -252,6 +265,67 @@
                 result.push(row);
             }
             return result;
+        }
+
+        // --- 动态效果代码 ---
+
+        // 鼠标指针动态效果
+        const trailElements = [];
+        const maxTrail = 20; // 鼠标拖尾元素的最大数量
+
+        function initMouseTrail() {
+            document.addEventListener('mousemove', (e) => {
+                const trail = document.createElement('div');
+                trail.className = 'mouse-trail';
+                trail.style.left = `${e.clientX}px`;
+                trail.style.top = `${e.clientY}px`;
+                document.body.appendChild(trail);
+
+                trailElements.push(trail);
+
+                if (trailElements.length > maxTrail) {
+                    const oldTrail = trailElements.shift();
+                    oldTrail.remove();
+                }
+
+                // 移除动画结束后元素
+                trail.addEventListener('animationend', () => {
+                    trail.remove();
+                    // 从数组中移除已删除的元素
+                    const index = trailElements.indexOf(trail);
+                    if (index > -1) {
+                        trailElements.splice(index, 1);
+                    }
+                });
+            });
+        }
+
+        // 飘屏动态效果
+        function initFloatingEmojis() {
+            const emoji = '⛰️'; // 使用您指定的符号
+            const frequency = 3000; // 每隔3秒生成一个
+
+            setInterval(() => {
+                const float = document.createElement('span');
+                float.className = 'floating-emoji';
+                float.textContent = emoji;
+
+                // 随机起始X位置
+                float.style.left = `${Math.random() * 90 + 5}vw`; // 5vw 到 95vw 之间
+
+                // 随机大小
+                float.style.fontSize = `${Math.random() * 20 + 20}px`; // 20px to 40px
+
+                // 随机动画持续时间
+                float.style.animationDuration = `${Math.random() * 5 + 5}s`; // 5s to 10s
+
+                document.body.appendChild(float);
+
+                // 动画结束后移除元素
+                float.addEventListener('animationend', () => {
+                    float.remove();
+                });
+            }, frequency);
         }
 
     </script>
