@@ -3,184 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>枝枝的歌单网站</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <title>枝枝的音乐主页</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">枝枝的歌单</a>
+            <a class="navbar-brand" href="#">枝枝的音乐主页</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">首页</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.html">首页</a></li>
                     <li class="nav-item"><a class="nav-link" href="songs.html">歌曲列表</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#rulesModal">点歌规则</a>
+                    </li>
                 </ul>
                 <div class="d-flex">
-                    <a href="https://live.douyin.com/869132681818" class="btn btn-sm btn-danger" target="_blank">
-                        <i class="bi bi-camera-reels-fill"></i> 进入直播间
+                    <span class="badge animate-pulse me-2" id="liveStatus">
+                        <i class="bi bi-mic-mute"></i> 直播结束
+                    </span>
+                    <a href="https://live.douyin.com/86913268181" target="_blank" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-play-circle"></i> 前往直播间
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-    
+
     <div class="container mt-4">
-        <h1>欢迎来到枝枝的歌单网站！</h1>
-        <img src="myphoto.jpg" alt="主播枝枝的抖音头像" class="img-fluid rounded mb-3">
-        <div class="intro-box">
-            <p><strong>@SL.菘蓝社所属正式生</strong></p>
-            <p>运营 @SL.苦槿旗下Viora企划成员）这里是枝枝，你想听的歌都在这里~</p>
-            <p>"我肩上是风，风上是闪烁的星辰～"</p>
-            <p><strong>【午间出没】</strong> 14:00-15:00 / 18:00-19:30 ・～・。°</p>
-            <p><strong>【其他时间随机出现】</strong></p>
-            <p><strong>单推符号：</strong> ⛰️</p>
-            <p><strong>建模：</strong> 互联网幽澪</p>
-        </div>
-        
-        <!-- 直播宣传区域 - 动态状态 -->
-        <div id="liveCard" class="live-card mt-4 p-4 rounded shadow">
-            <div class="d-flex align-items-center mb-3">
-                <i class="bi bi-broadcast-pin fs-3 me-2"></i>
-                <h3 class="m-0" id="liveTitle">枝枝正在直播!</h3>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="myphoto.jpg" class="card-img-top img-fluid" alt="枝枝">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">欢迎来到枝枝的音乐主页！</h2>
+                        <p class="card-text">这里是枝枝的专属音乐空间，你可以在这里找到我的歌单，了解我的直播动态，以及更多关于音乐的分享。</p>
+                        <a href="songs.html" class="btn btn-primary mt-3">查看歌单</a>
+                    </div>
+                </div>
             </div>
-            <p class="fs-5" id="liveMessage">快来直播间和我一起互动吧~</p>
-            <a href="https://live.douyin.com/869132681818" 
-               class="btn mt-2"
-               id="liveBtn"
-               target="_blank">
-                <i class="bi bi-camera-reels-fill"></i> 立即进入直播间
-            </a>
-        </div>
-        
-        <div class="d-flex flex-wrap gap-2 mt-3">
-            <!-- 抖音主页按钮 -->
-            <a href="https://www.douyin.com/user/MS4wLjABAAAALSsVdbkE3e0PCyvcDyDLK7OdWVbsLpICZHRzL00PyP-wrI_WXXAJT06siM0Jrygh?from_tab_name=main" 
-               class="btn btn-purple mt-2">
-                <i class="bi bi-house-door"></i> 去我的抖音主页
-            </a>
-            
-            <!-- 直播间按钮 -->
-            <a href="https://live.douyin.com/869132681818" 
-               class="btn btn-danger mt-2" 
-               id="liveButton"
-               target="_blank">
-                <i class="bi bi-camera-reels-fill"></i> 进入直播间
-            </a>
-        </div>
-        
-        <!-- 歌单统计信息 -->
-        <div class="stats-box mt-4 p-4 bg-white rounded shadow">
-            <h3 class="mb-3">歌单统计</h3>
-            <div id="stats" class="text-center">
-                <p>正在加载数据...</p>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                        <h3 class="card-title mb-4">直播动态</h3>
+                        <div id="liveCard" class="live-status-card mb-4">
+                            <h4 id="liveTitle" class="live-title">直播结束</h4>
+                            <p id="liveMessage" class="live-message">枝枝当前未在直播，请关注直播间获取最新动态。</p>
+                            <a id="liveBtn" href="https://live.douyin.com/86913268181" target="_blank" class="btn btn-outline-danger live-btn">
+                                <i class="bi bi-play-circle"></i> 前往直播间
+                            </a>
+                        </div>
+                        <div class="stats-box p-3 bg-light rounded text-center w-100">
+                            <h5>歌单统计</h5>
+                            <p class="mb-1">总歌曲数: <span id="totalSongsCount">0</span></p>
+                            <p class="mb-0">常见风格: <span id="genreStatsDisplay">暂无数据</span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+
+    <div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rulesModalLabel">直播间点歌规则</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">首次入团送半首歌/解锁整首299比心兔兔</li>
+                        <li class="list-group-item">正常点歌299比心兔兔</li>
+                        <li class="list-group-item">会员/星守在每周六会有专门的点歌场</li>
+                        <li class="list-group-item">高音歌688万象烟火</li>
+                        <li class="list-group-item">学歌1200跑车</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 首页统计信息加载
-        document.addEventListener('DOMContentLoaded', function() {
-            // 从localStorage获取数据
-            const statsData = JSON.parse(localStorage.getItem('songStats')) || null;
-            
-            if (statsData) {
-                updateStatsDisplay(statsData);
-            } else {
-                // 如果没有缓存数据，等待1秒再显示
-                setTimeout(() => {
-                    const statsElement = document.getElementById('stats');
-                    if (statsElement) {
-                        statsElement.innerHTML = '<p>未能加载统计信息，请访问歌曲列表页刷新数据</p>';
-                    }
-                }, 1000);
-            }
-            
-            // 更新直播状态
-            updateHomeLiveStatus();
+        // 全局变量存储歌曲数据和统计，以便在首页显示
+        let allSongs = [];
+        let genreStats = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 首页加载时也尝试加载歌单数据以显示统计
+            loadSongsForStats();
+            detectLiveStatus(); // 初始化直播状态检测
         });
-        
-        function updateStatsDisplay(stats) {
-            const statsElement = document.getElementById('stats');
-            if (!statsElement) return;
-            
-            const totalSongs = stats.songCount || 0;
-            let html = `<p class="fs-5">歌单总数: <strong class="text-primary">${totalSongs}</strong> 首歌曲</p>`;
-            
-            if (totalSongs > 0 && stats.genreStats) {
-                html += '<div class="d-flex flex-wrap justify-content-center gap-3 mt-4">';
-                
-                // 只显示数量最多的5种风格
-                const topGenres = stats.genreStats.slice(0, 5);
-                topGenres.forEach(stat => {
-                    const percentage = ((stat.count / totalSongs) * 100).toFixed(1);
-                    html += `
-                    <div class="genre-card p-3 border rounded text-center" style="min-width: 140px;">
-                        <div class="fs-5 fw-bold mb-2">${stat.genre || '未知风格'}</div>
-                        <div class="progress" style="height: 15px;">
-                            <div class="progress-bar" role="progressbar" 
-                                 style="width: ${percentage}%; background-color: #6f42c1;"></div>
-                        </div>
-                        <div class="mt-2"><small>${stat.count}首 (${percentage}%)</small></div>
-                    </div>`;
+
+        // 仅加载歌曲数据用于统计，不显示表格
+        async function loadSongsForStats() {
+            try {
+                const apiUrl = 'https://raw.githubusercontent.com/jastom26/yonghu.github.io/main/SL.%E6%9E%9D%E4%BB%8A%E5%B1%B1%E3%81%AESONGLIST-sheet1.csv';
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error(`HTTP错误 ${response.status}`);
+                const csvText = await response.text();
+                allSongs = parseCSV(csvText);
+
+                // 简化歌手处理和风格修正 (与songs.html中逻辑保持一致)
+                allSongs = allSongs.map(song => {
+                    if (song['歌手'] && song['歌手'].includes(',')) {
+                        song['歌手'] = song['歌手'].split(',')[0].trim();
+                    }
+                    if (!song['歌手'] || song['歌手'].trim() === '') {
+                        song['歌手'] = '未知歌手';
+                    }
+                    if (!song['风格'] || song['风格'].trim() === '') {
+                        song['风格'] = '未知风格';
+                    }
+                    return song;
                 });
-                
-                html += '</div>';
-                html += `<div class="mt-4"><a href="songs.html" class="btn btn-outline-purple">查看完整歌单</a></div>`;
-            } else {
-                html = '<p>未能加载统计信息，请访问歌曲列表页刷新数据</p>';
+
+
+                // 生成风格统计
+                if (allSongs.length > 0) {
+                    const genreCount = {};
+                    allSongs.forEach(song => {
+                        const genre = song['风格'] || '未知';
+                        genreCount[genre] = (genreCount[genre] || 0) + 1;
+                    });
+                    genreStats = Object.keys(genreCount).map(genre => {
+                        return { genre, count: genreCount[genre] };
+                    }).sort((a, b) => b.count - a.count);
+
+                    // 保存统计信息到localStorage
+                    localStorage.setItem('songStats', JSON.stringify({
+                        songCount: allSongs.length,
+                        genreStats: genreStats
+                    }));
+                }
+
+                // 更新首页统计显示
+                document.getElementById('totalSongsCount').textContent = allSongs.length;
+                displayGenreStats();
+
+            } catch (error) {
+                console.error('首页加载歌单统计失败:', error);
+                // 可以选择显示错误信息或保持默认值
             }
-            
-            statsElement.innerHTML = html;
         }
-        
-        // 首页直播状态更新
-        function updateHomeLiveStatus() {
-            const liveCard = document.getElementById('liveCard');
+
+        // 显示风格统计信息 (与songs.html中逻辑保持一致)
+        function displayGenreStats() {
+            const genreStatsDisplay = document.getElementById('genreStatsDisplay');
+            if (!genreStatsDisplay) return;
+
+            genreStatsDisplay.innerHTML = '';
+            const topGenres = genreStats.slice(0, 5); // 显示前5个风格
+            if (topGenres.length === 0) {
+                 genreStatsDisplay.innerHTML = '暂无风格数据';
+                 return;
+            }
+
+            topGenres.forEach(stat => {
+                const span = document.createElement('span');
+                span.className = 'badge bg-info text-dark me-1'; // 调整了margin
+                span.textContent = `${stat.genre} (${stat.count})`;
+                genreStatsDisplay.appendChild(span);
+            });
+        }
+
+
+        // 检测直播状态 (与songs.html中逻辑保持一致)
+        function detectLiveStatus() {
+            const liveStatusBadge = document.getElementById('liveStatus'); // 导航栏的徽章
+            const liveCard = document.getElementById('liveCard'); // 首页的直播卡片
             const liveTitle = document.getElementById('liveTitle');
             const liveMessage = document.getElementById('liveMessage');
             const liveBtn = document.getElementById('liveBtn');
             
-            if (!liveCard) return;
-            
-            const isLive = checkLiveStatus();
-            
-            if (isLive) {
-                liveCard.classList.add('bg-danger');
-                liveCard.classList.remove('bg-secondary');
-                liveTitle.innerHTML = '<i class="bi bi-broadcast-pin"></i> 枝枝正在直播!';
-                liveMessage.textContent = '快来直播间和我一起互动吧~';
-                liveBtn.classList.add('btn-light');
-                liveBtn.classList.remove('btn-outline-light');
-            } else {
-                liveCard.classList.add('bg-secondary');
-                liveCard.classList.remove('bg-danger');
-                liveTitle.innerHTML = '<i class="bi bi-mic-mute"></i> 当前未直播';
-                liveMessage.textContent = '直播时间：14:00-15:00 / 18:00-19:30';
-                liveBtn.classList.add('btn-outline-light');
-                liveBtn.classList.remove('btn-light');
-            }
-            
-            // 添加脉动动画（仅在直播时）
-            const pulseAnimation = liveCard.querySelector('.pulse-animation');
-            if (isLive) {
-                if (!pulseAnimation) {
-                    const pulse = document.createElement('div');
-                    pulse.className = 'pulse-animation';
-                    liveCard.appendChild(pulse);
+            const isLive = checkLiveStatus(); // 调用判断函数
+
+            // 更新导航栏徽章
+            if (liveStatusBadge) {
+                if (isLive) {
+                    liveStatusBadge.innerHTML = '<i class="bi bi-broadcast-pin"></i> 正在直播';
+                    liveStatusBadge.classList.add('bg-danger', 'animate-pulse');
+                    liveStatusBadge.classList.remove('bg-secondary');
+                } else {
+                    liveStatusBadge.innerHTML = '<i class="bi bi-mic-mute"></i> 直播结束';
+                    liveStatusBadge.classList.remove('bg-danger', 'animate-pulse');
+                    liveStatusBadge.classList.add('bg-secondary');
                 }
-            } else if (pulseAnimation) {
-                pulseAnimation.remove();
             }
+
+            // 更新首页直播卡片
+            if (liveCard) {
+                if (isLive) {
+                    liveTitle.textContent = '正在直播';
+                    liveMessage.textContent = '枝枝正在直播中，快来互动吧！';
+                    liveBtn.classList.remove('btn-outline-danger');
+                    liveBtn.classList.add('btn-danger', 'animate-pulse'); // 添加动画
+                } else {
+                    liveTitle.textContent = '直播结束';
+                    liveMessage.textContent = '枝枝当前未在直播，请关注直播间获取最新动态。';
+                    liveBtn.classList.remove('btn-danger', 'animate-pulse');
+                    liveBtn.classList.add('btn-outline-danger');
+                }
+            }
+            
+            // 每5分钟更新一次状态
+            setTimeout(detectLiveStatus, 5 * 60 * 1000);
         }
-        
-        // 检测直播状态
+
+        // 根据时间判断直播状态（你现有逻辑）
         function checkLiveStatus() {
             const now = new Date();
             const hours = now.getHours();
@@ -196,6 +235,25 @@
             return (currentMinutes >= livePeriod1.start && currentMinutes <= livePeriod1.end) ||
                    (currentMinutes >= livePeriod2.start && currentMinutes <= livePeriod2.end);
         }
+
+        // CSV解析函数 (与songs.html中逻辑保持一致)
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return [];
+            const firstLine = lines[0].startsWith('\ufeff') ? lines[0].substring(1) : lines[0];
+            const headers = firstLine.split(',').map(header => header.trim());
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(value => value.trim());
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                result.push(row);
+            }
+            return result;
+        }
+
     </script>
 </body>
 </html>
