@@ -22,109 +22,90 @@
                 </ul>
                 <div class="d-flex">
                     <span class="badge animate-pulse me-2" id="liveStatus">
-                        <i class="bi bi-broadcast-pin"></i> 正在直播
+                        <i class="bi bi-mic-mute"></i> 直播结束
                     </span>
-                    <a href="https://live.douyin.com/869132681818" class="btn btn-sm btn-danger" target="_blank">
-                        <i class="bi bi-camera-reels-fill"></i> 进入直播间
+                    <a href="https://live.douyin.com/86913268181" target="_blank" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-play-circle"></i> 前往直播间
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-    
+
     <div class="container mt-4">
-        <h1>枝枝的歌单</h1>
-        
-        <!-- 搜索和筛选区域 -->
-        <div class="row mb-3">
-            <div class="col-md-8">
-                <input type="text" id="searchInput" class="form-control" placeholder="搜索歌曲、歌手或风格...">
+        <h1 class="mb-4">枝枝的歌单列表</h1>
+
+        <div class="mb-4 row align-items-center">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <input type="text" id="searchInput" class="form-control" placeholder="搜索歌曲名或歌手..." aria-label="搜索歌曲">
             </div>
-            <div class="col-md-4">
-                <select id="genreFilter" class="form-select">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <select id="genreFilter" class="form-select" aria-label="筛选风格">
                     <option value="">所有风格</option>
-                    <!-- 风格选项将通过JS动态填充 -->
                 </select>
             </div>
-        </div>
-        
-        <!-- 按钮区域 -->
-        <div class="d-flex flex-wrap gap-2 mb-3">
-            <button id="randomButton" class="btn btn-purple">随机点歌</button>
-            <a href="https://live.douyin.com/869132681818" class="btn btn-danger" target="_blank">
-                <i class="bi bi-camera-reels-fill"></i> 进入直播间
-            </a>
-        </div>
-        
-        <div id="loading" class="text-center mb-3">加载歌单中...</div>
-        
-        <!-- 歌曲表格 - 点击整行可复制 -->
-        <div class="table-responsive">
-            <table id="songTable" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>歌名</th>
-                        <th>歌手</th>
-                        <th>风格</th>
-                        <th>链接</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        
-        <!-- 最近点歌区域 -->
-        <div class="recent-box mt-4 p-4 bg-white rounded shadow">
-            <h4 class="mb-3">最近点歌 <span class="badge bg-purple" id="recent-count">0</span></h4>
-            <div id="recentSongs" class="d-flex flex-wrap gap-3">
-                <p class="text-muted">暂无点歌记录</p>
+            <div class="col-md-2">
+                <button id="randomButton" class="btn btn-primary w-100" title="随机播放一首歌">
+                    <i class="bi bi-shuffle"></i> 随机一首
+                </button>
             </div>
         </div>
-        
-        <a href="index.html" class="btn btn-secondary mt-3">返回主页</a>
+
+        <div id="loading" class="text-center my-5" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">加载中...</span>
+            </div>
+            <p class="mt-2">歌单加载中...</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped" id="songTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">歌曲名</th>
+                        <th scope="col">歌手</th>
+                        <th scope="col">风格</th>
+                        <th scope="col">备注</th>
+                    </tr>
+                </thead>
+                <tbody id="songList">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="stats-box p-3 bg-light rounded text-center my-4">
+            <div class="d-flex justify-content-around align-items-center flex-wrap">
+                <div class="p-2">
+                    <h5 class="mb-0">总歌曲数: <span id="totalSongsCount">0</span></h5>
+                </div>
+                <div class="p-2">
+                    <h5 class="mb-0">常见风格:</h5>
+                    <div id="genreStatsDisplay" class="d-flex flex-wrap justify-content-center mt-2">
+                        </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <!-- 引入 Bootstrap JS -->
+
+    <div id="customToast" class="custom-toast"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- 主脚本文件 -->
     <script>
         // 全局变量存储歌曲数据
         let allSongs = [];
         let genreStats = [];
-        const apiUrl = 'https://sheetdb.io/api/v1/ki9gdqgc7ffrr';
+        let currentSortColumn = null;
+        let currentSortDirection = 'asc';
 
-        // 页面加载完成后执行
-        document.addEventListener('DOMContentLoaded', function() {
-            // 绑定随机按钮事件
-            const randomButton = document.getElementById('randomButton');
-            if (randomButton) {
-                randomButton.addEventListener('click', copyRandomSong);
-            }
-            
-            // 绑定搜索功能
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(this.timer);
-                    this.timer = setTimeout(applyFilters, 300);
-                });
-            }
-            
-            // 绑定风格筛选器
-            const genreFilter = document.getElementById('genreFilter');
-            if (genreFilter) {
-                genreFilter.addEventListener('change', applyFilters);
-            }
-            
-            // 初始化加载歌曲
+        // **已更新为您的GitHub原始CSV文件链接**
+        const apiUrl = 'https://raw.githubusercontent.com/jastom26/yonghu.github.io/main/SL.%E6%9E%9D%E4%BB%8A%E5%B1%B1%E3%81%AESONGLIST-sheet1.csv';
+
+        // 页面加载完成时执行
+        document.addEventListener('DOMContentLoaded', () => {
             loadSongs();
-            
-            // 加载最近点歌记录
-            displayRecentSongs();
-            
-            // 直播状态检测
-            detectLiveStatus();
+            setupEventListeners();
+            detectLiveStatus(); // 初始化直播状态检测
         });
 
         // 加载歌曲数据
@@ -135,97 +116,98 @@
                 const randomButton = document.getElementById('randomButton');
                 const searchInput = document.getElementById('searchInput');
                 const genreFilter = document.getElementById('genreFilter');
-                
+
                 // 显示加载状态
                 if (loading) loading.style.display = 'block';
                 if (songTable) songTable.style.display = 'none';
                 if (randomButton) randomButton.disabled = true;
                 if (searchInput) searchInput.disabled = true;
                 if (genreFilter) genreFilter.disabled = true;
-                
+
                 // 添加超时处理
-                const timeoutPromise = new Promise((_, reject) => 
+                const timeoutPromise = new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('请求超时')), 10000)
                 );
-                
+
                 // 获取数据
                 const response = await Promise.race([
                     fetch(apiUrl),
                     timeoutPromise
                 ]);
-                
+
                 if (!response.ok) throw new Error(`HTTP错误 ${response.status}`);
-                
-                let data = await response.json();
-                
-                // 处理不同格式的数据
-                if (Array.isArray(data)) {
-                    allSongs = data;
-                } else if (typeof data === 'object' && data !== null) {
-                    allSongs = Object.values(data);
-                } else {
-                    throw new Error('数据格式无效');
-                }
-                
+
+                // 从这里开始解析CSV数据
+                const csvText = await response.text();
+                allSongs = parseCSV(csvText); // 调用新的parseCSV函数
+
                 // 简化歌手处理：只取第一个歌手
                 allSongs = allSongs.map(song => {
                     // 处理歌手：如果有逗号，取第一个
                     if (song['歌手'] && song['歌手'].includes(',')) {
                         song['歌手'] = song['歌手'].split(',')[0].trim();
                     }
-                    
+
                     // 自动修正空值
                     if (!song['歌手'] || song['歌手'].trim() === '') {
                         song['歌手'] = '未知歌手';
                     }
-                    
+
                     if (!song['风格'] || song['风格'].trim() === '') {
                         song['风格'] = '未知风格';
                     }
-                    
+
+                    if (!song['备注'] || song['备注'].trim() === '') {
+                        song['备注'] = '-';
+                    }
+
                     return song;
                 });
-                
+
                 // 生成风格统计
                 if (allSongs.length > 0) {
                     const genreCount = {};
-                    
+
                     allSongs.forEach(song => {
                         const genre = song['风格'] || '未知';
                         genreCount[genre] = (genreCount[genre] || 0) + 1;
                     });
-                    
+
                     // 转换为数组并排序
                     genreStats = Object.keys(genreCount).map(genre => {
                         return { genre, count: genreCount[genre] };
                     }).sort((a, b) => b.count - a.count);
-                    
+
                     // 保存统计信息到localStorage
                     localStorage.setItem('songStats', JSON.stringify({
                         songCount: allSongs.length,
                         genreStats: genreStats
                     }));
                 }
-                
+
                 // 更新UI
                 if (loading) loading.style.display = 'none';
                 if (songTable) songTable.style.display = 'table';
                 if (randomButton) randomButton.disabled = false;
                 if (searchInput) searchInput.disabled = false;
                 if (genreFilter) genreFilter.disabled = false;
-                
+
                 // 填充风格筛选器
                 populateGenreFilter();
-                
+
                 // 显示歌曲
                 displaySongs(allSongs);
-                
+
                 // 添加行点击事件
                 addRowClickEvents();
-                
+
+                // 更新总歌曲数
+                document.getElementById('totalSongsCount').textContent = allSongs.length;
+                displayGenreStats();
+
                 // 显示加载成功通知
                 showToast('歌单加载成功!');
-                
+
             } catch (error) {
                 console.error('加载歌曲失败:', error);
                 const loading = document.getElementById('loading');
@@ -237,288 +219,172 @@
             }
         }
 
-        // 显示歌曲表格
-        function displaySongs(songs) {
-            const tbody = document.querySelector('#songTable tbody');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            songs.forEach(song => {
-                const row = document.createElement('tr');
-                row.setAttribute('data-song-info', `${song['歌名'] || ''} - ${song['歌手'] || ''}`);
-                
-                row.innerHTML = `
-                    <td>${song['歌名'] || '-'}</td>
-                    <td>${song['歌手'] || '-'}</td>
-                    <td>${song['风格'] || '-'}</td>
-                    <td>
-                        ${song['链接'] ? `<a href="${song['链接']}" target="_blank" class="btn btn-sm btn-outline-purple">播放</a>` : '-'}
-                    </td>
-                `;
-                tbody.appendChild(row);
+        // 设置事件监听器
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterSongs);
+            document.getElementById('genreFilter').addEventListener('change', filterSongs);
+            document.getElementById('randomButton').addEventListener('click', playRandomSong);
+
+            // 添加排序事件监听器
+            document.querySelectorAll('#songTable th').forEach(header => {
+                header.addEventListener('click', () => {
+                    const column = header.getAttribute('scope');
+                    if (column) { // 排除 # 列，因为没有 scope
+                        sortTable(column);
+                    }
+                });
             });
         }
 
-        // 添加行点击事件
-        function addRowClickEvents() {
-            const rows = document.querySelectorAll('#songTable tbody tr');
-            
-            rows.forEach(row => {
-                row.addEventListener('click', function(event) {
-                    // 如果点击的是播放按钮，不触发复制
-                    if (event.target.closest('a')) {
-                        return;
-                    }
-                    
-                    // 获取歌曲信息
-                    const songInfo = this.getAttribute('data-song-info') || '';
-                    
-                    if (!songInfo) return;
-                    
-                    // 复制到剪贴板
-                    copyToClipboard(songInfo);
-                    
-                    // 添加复制成功动画
-                    this.classList.add('copied');
-                    setTimeout(() => {
-                        this.classList.remove('copied');
-                    }, 1500);
-                    
-                    // 保存到最近点歌
-                    const parts = songInfo.split(' - ');
-                    if (parts.length >= 2) {
-                        saveRecentSong({
-                            '歌名': parts[0] || '未知歌曲',
-                            '歌手': parts[1] || '未知歌手'
-                        });
-                    }
-                    
-                    // 显示提示
-                    showToast('已复制: ' + songInfo);
-                });
+        // 显示歌曲
+        function displaySongs(songsToDisplay) {
+            const songList = document.getElementById('songList');
+            songList.innerHTML = ''; // 清空现有列表
+
+            if (songsToDisplay.length === 0) {
+                songList.innerHTML = '<tr><td colspan="5" class="text-center">没有找到符合条件的歌曲。</td></tr>';
+                return;
+            }
+
+            songsToDisplay.forEach((song, index) => {
+                const row = songList.insertRow();
+                row.dataset.songName = song['歌曲名']; // 用于随机播放时获取歌名
+                row.dataset.artistName = song['歌手']; // 用于随机播放时获取歌手名
+                row.insertCell().textContent = index + 1;
+                row.insertCell().textContent = song['歌曲名'];
+                row.insertCell().textContent = song['歌手'];
+                row.insertCell().textContent = song['风格'];
+                row.insertCell().textContent = song['备注'];
             });
+            addRowClickEvents(); // 重新绑定点击事件
+        }
+
+        // 过滤歌曲
+        function filterSongs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const selectedGenre = document.getElementById('genreFilter').value;
+
+            const filtered = allSongs.filter(song => {
+                const matchesSearch = (song['歌曲名'] && song['歌曲名'].toLowerCase().includes(searchTerm)) ||
+                                      (song['歌手'] && song['歌手'].toLowerCase().includes(searchTerm));
+                const matchesGenre = (selectedGenre === '' || song['风格'] === selectedGenre);
+                return matchesSearch && matchesGenre;
+            });
+            displaySongs(filtered);
         }
 
         // 填充风格筛选器
         function populateGenreFilter() {
             const genreFilter = document.getElementById('genreFilter');
-            if (!genreFilter || !genreStats || genreStats.length === 0) return;
-            
-            // 清空现有选项（保留"所有风格"）
-            genreFilter.innerHTML = '<option value="">所有风格</option>';
-            
-            // 添加所有风格选项
-            genreStats.forEach(stat => {
+            genreFilter.innerHTML = '<option value="">所有风格</option>'; // 清空并添加默认选项
+
+            const uniqueGenres = [...new Set(allSongs.map(song => song['风格']).filter(Boolean))].sort(); // 过滤空值并排序
+            uniqueGenres.forEach(genre => {
                 const option = document.createElement('option');
-                option.value = stat.genre;
-                option.textContent = `${stat.genre} (${stat.count})`;
+                option.value = genre;
+                option.textContent = genre;
                 genreFilter.appendChild(option);
             });
         }
 
-        // 应用筛选（搜索+风格）
-        function applyFilters() {
-            const searchInput = document.getElementById('searchInput');
-            const genreFilter = document.getElementById('genreFilter');
-            
-            const searchText = searchInput ? searchInput.value.trim().toLowerCase() : '';
-            const selectedGenre = genreFilter ? genreFilter.value : '';
-            
-            const filteredSongs = allSongs.filter(song => {
-                const songName = (song['歌名'] || '').toLowerCase();
-                const artist = (song['歌手'] || '').toLowerCase();
-                const genre = (song['风格'] || '').toLowerCase();
-                
-                // 搜索匹配
-                const matchesSearch = searchText === '' || 
-                    songName.includes(searchText) || 
-                    artist.includes(searchText) || 
-                    genre.includes(searchText);
-                
-                // 风格匹配
-                const matchesGenre = selectedGenre === '' || 
-                    (song['风格'] === selectedGenre);
-                
-                return matchesSearch && matchesGenre;
-            });
-            
-            displaySongs(filteredSongs);
-            addRowClickEvents(); // 重新绑定点击事件
-        }
-
-        // 复制随机歌曲到剪贴板并显示提示框
-        function copyRandomSong() {
-            if (!allSongs || allSongs.length === 0) {
-                showToast('歌单为空，无法随机选择', 'error');
+        // 播放随机歌曲
+        function playRandomSong() {
+            if (allSongs.length === 0) {
+                showToast('歌单为空，无法随机播放。', 'warning');
                 return;
             }
-            
-            // 随机选择一首歌
             const randomIndex = Math.floor(Math.random() * allSongs.length);
             const randomSong = allSongs[randomIndex];
-            
-            // 创建复制内容
-            const songName = randomSong['歌名'] || '未知歌曲';
-            const artist = randomSong['歌手'] || '未知歌手';
-            const songInfo = `${songName} - ${artist}`;
-            
-            // 保存到最近点歌
-            saveRecentSong({
-                '歌名': songName,
-                '歌手': artist
-            });
-            
-            // 复制到剪贴板
-            copyToClipboard(songInfo);
-            
-            // 显示提示
-            showToast('已复制: ' + songInfo);
+            showToast(`随机到：${randomSong['歌曲名']} - ${randomSong['歌手']}`, 'success');
         }
 
-        // 通用复制到剪贴板函数
-        function copyToClipboard(text) {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).catch(err => {
-                    console.error('复制失败:', err);
-                    fallbackCopy(text);
+        // 添加表格行点击事件
+        function addRowClickEvents() {
+            const rows = document.querySelectorAll('#songTable tbody tr');
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const songName = this.dataset.songName;
+                    const artistName = this.dataset.artistName;
+                    showToast(`你点击了：${songName} - ${artistName}`, 'info');
                 });
+            });
+        }
+
+        // 排序表格
+        function sortTable(column) {
+            if (currentSortColumn === column) {
+                currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
             } else {
-                fallbackCopy(text);
+                currentSortColumn = column;
+                currentSortDirection = 'asc';
             }
-        }
 
-        // 兼容性复制方法
-        function fallbackCopy(text) {
-            try {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.top = '0';
-                textArea.style.left = '0';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
-                const success = document.execCommand('copy');
-                document.body.removeChild(textArea);
-                
-                if (!success) {
-                    throw new Error('复制命令失败');
+            const sortedSongs = [...allSongs].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                if (typeof valA === 'string') {
+                    return currentSortDirection === 'asc' ? valA.localeCompare(valB, 'zh-CN') : valB.localeCompare(valA, 'zh-CN');
+                } else {
+                    return currentSortDirection === 'asc' ? valA - valB : valB - valA;
                 }
-            } catch (err) {
-                console.error('复制失败:', err);
-                return false;
-            }
-            return true;
-        }
-
-        // 保存最近点歌记录
-        function saveRecentSong(song) {
-            if (!song) return;
-            
-            let recentSongs = JSON.parse(localStorage.getItem('recentSongs')) || [];
-            
-            // 获取当前时间
-            const now = new Date();
-            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            
-            // 如果歌曲已存在，移动到最前
-            recentSongs = recentSongs.filter(s => 
-                s['歌名'] !== song['歌名'] || s['歌手'] !== song['歌手']);
-            
-            // 添加到开头（只保存歌名和歌手）
-            recentSongs.unshift({
-                '歌名': song['歌名'] || '未知歌曲',
-                '歌手': song['歌手'] || '未知歌手',
-                '时间': timeString
             });
-            
-            // 只保留最近5首
-            recentSongs = recentSongs.slice(0, 5);
-            
-            localStorage.setItem('recentSongs', JSON.stringify(recentSongs));
-            displayRecentSongs(recentSongs);
+            displaySongs(sortedSongs);
+            updateSortIndicators(column);
         }
 
-        // 显示最近点歌
-        function displayRecentSongs(recentSongs = null) {
-            const recentContainer = document.getElementById('recentSongs');
-            if (!recentContainer) return;
-            
-            let songsToDisplay = recentSongs;
-            
-            if (!songsToDisplay) {
-                // 如果没有传入数据，从localStorage获取
-                songsToDisplay = JSON.parse(localStorage.getItem('recentSongs')) || [];
-            }
-            
-            recentContainer.innerHTML = '';
-            
-            // 更新计数
-            const countElement = document.getElementById('recent-count');
-            if (countElement) {
-                countElement.textContent = songsToDisplay.length;
-            }
-            
-            if (songsToDisplay.length === 0) {
-                recentContainer.innerHTML = '<p class="text-muted">暂无点歌记录</p>';
-                return;
-            }
-            
-            songsToDisplay.forEach(song => {
-                const songCard = document.createElement('div');
-                songCard.className = 'recent-song-card';
-                songCard.innerHTML = `
-                    <div class="recent-song-info">
-                        <div class="recent-song-title">${song['歌名']}</div>
-                        <div class="recent-song-artist">${song['歌手']}</div>
-                        <div class="recent-time">${song['时间'] || ''}</div>
-                    </div>
-                `;
-                recentContainer.appendChild(songCard);
+        // 更新排序箭头
+        function updateSortIndicators(sortedColumn) {
+            document.querySelectorAll('#songTable th').forEach(header => {
+                header.classList.remove('sorted-asc', 'sorted-desc');
+                if (header.getAttribute('scope') === sortedColumn) {
+                    header.classList.add(`sorted-${currentSortDirection}`);
+                }
             });
         }
 
-        // 显示提示框
+        // 显示自定义Toast提示
         function showToast(message, type = 'success') {
-            // 移除已有提示框
-            const existingToasts = document.querySelectorAll('.custom-toast');
-            existingToasts.forEach(toast => {
-                toast.remove();
-            });
-            
-            // 创建提示框元素
-            const toast = document.createElement('div');
-            toast.className = `custom-toast ${type}`;
+            const toast = document.getElementById('customToast');
             toast.textContent = message;
-            
-            // 添加到页面顶部
-            document.body.appendChild(toast);
-            
-            // 强制重绘
-            toast.offsetHeight;
-            
-            // 显示提示框
-            toast.style.opacity = '1';
-            toast.style.transform = 'translate(-50%, 0)';
-            
-            // 3秒后移除
+            toast.className = 'custom-toast show'; // 重置类名
+            toast.classList.add(`custom-toast-${type}`); // 添加类型类名
+
+            // 移除旧的类型类名，确保每次只显示一个
+            ['custom-toast-success', 'custom-toast-error', 'custom-toast-warning', 'custom-toast-info'].forEach(cls => {
+                if (cls !== `custom-toast-${type}`) {
+                    toast.classList.remove(cls);
+                }
+            });
+
             setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translate(-50%, -20px)';
-                
-                // 完全移除元素
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.remove();
-                    }
-                }, 500);
-            }, 3000);
+                toast.classList.remove('show');
+            }, 3000); // 3秒后隐藏
         }
 
-        // 直播状态检测
+        // 显示风格统计信息
+        function displayGenreStats() {
+            const genreStatsDisplay = document.getElementById('genreStatsDisplay');
+            if (!genreStatsDisplay) return;
+
+            genreStatsDisplay.innerHTML = '';
+            // 显示前5个风格，如果少于5个就显示所有
+            const topGenres = genreStats.slice(0, 5);
+            if (topGenres.length === 0) {
+                 genreStatsDisplay.innerHTML = '<span class="badge bg-secondary me-2">暂无风格数据</span>';
+                 return;
+            }
+
+            topGenres.forEach(stat => {
+                const span = document.createElement('span');
+                span.className = 'badge bg-info text-dark me-2 mb-1';
+                span.textContent = `${stat.genre} (${stat.count})`;
+                genreStatsDisplay.appendChild(span);
+            });
+        }
+
+
+        // 检测直播状态
         function detectLiveStatus() {
             const liveStatus = document.getElementById('liveStatus');
             
@@ -541,7 +407,7 @@
             setTimeout(detectLiveStatus, 5 * 60 * 1000);
         }
 
-        // 检测直播状态
+        // 根据时间判断直播状态（你现有逻辑）
         function checkLiveStatus() {
             const now = new Date();
             const hours = now.getHours();
@@ -557,6 +423,33 @@
             return (currentMinutes >= livePeriod1.start && currentMinutes <= livePeriod1.end) ||
                    (currentMinutes >= livePeriod2.start && currentMinutes <= livePeriod2.end);
         }
+
+
+        // 新增函数：用于解析CSV文本
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim() !== ''); // 过滤空行
+            if (lines.length === 0) return [];
+
+            // 处理可能存在的BOM头
+            const firstLine = lines[0].startsWith('\ufeff') ? lines[0].substring(1) : lines[0];
+
+            const headers = firstLine.split(',').map(header => header.trim()); // 获取表头
+
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                // 使用正则表达式处理CSV，允许逗号在引号内
+                // 这个简单的split适用于没有复杂逗号或换行的CSV，如果CSV内容复杂，可能需要更健壮的CSV解析库
+                const values = lines[i].split(',').map(value => value.trim());
+                
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || ''; // 确保有值，避免undefined
+                });
+                result.push(row);
+            }
+            return result;
+        }
+
     </script>
 </body>
 </html>
