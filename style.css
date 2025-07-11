@@ -2,12 +2,10 @@
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
-    position: relative; /* 用于定位飘屏和鼠标拖尾效果 */
+    position: relative;
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    overflow-x: hidden; /* 防止水平滚动条出现，特别是飘屏效果 */
-    cursor: default; /* 确保鼠标是默认指针，以便自定义拖尾效果 */
 }
 
 .container {
@@ -56,209 +54,398 @@ h1 {
     background-color: #f0f0f8 !important;
 }
 
-.table tbody tr.active {
-    background-color: #e2e6ea; /* Example active row color */
+.table tbody tr.copied {
+    background-color: #e6f7ff !important;
+    animation: copiedHighlight 1.5s ease;
 }
 
-/* Custom Toast Notification */
-.custom-toast {
-    visibility: hidden;
-    min-width: 250px;
-    background-color: #333;
-    color: #fff;
+@keyframes copiedHighlight {
+    0% { background-color: #e6f7ff; }
+    70% { background-color: #e6f7ff; }
+    100% { background-color: transparent; }
+}
+
+.btn-purple {
+    background-color: #6f42c1;
+    color: white;
+    border-color: #6f42c1;
+}
+
+.btn-purple:hover {
+    background-color: #5a32a3;
+    color: white;
+}
+
+.btn-outline-purple {
+    border-color: #6f42c1;
+    color: #6f42c1;
+}
+
+.btn-outline-purple:hover {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #ff416c;
+    border-color: #ff416c;
+}
+
+.btn-danger:hover {
+    background-color: #e02e57;
+    border-color: #e02e57;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+#loading {
     text-align: center;
-    border-radius: 5px;
-    padding: 16px;
+    padding: 20px;
+    font-size: 18px;
+}
+
+/* 提示框样式 */
+.custom-toast {
     position: fixed;
-    z-index: 1050; /* Above Bootstrap modals */
+    top: 20px;
     left: 50%;
-    transform: translateX(-50%);
-    bottom: 30px;
-    font-size: 17px;
-    white-space: nowrap; /* Prevent text wrapping */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translate(-50%, -20px);
+    background-color: #28a745;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 99999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     opacity: 0;
-    transition: visibility 0s, opacity 0.5s ease-in-out;
+    transition: all 0.5s ease;
+    text-align: center;
+    min-width: 300px;
+    max-width: 90%;
 }
 
-.custom-toast.show {
-    visibility: visible;
-    opacity: 1;
+.custom-toast.error {
+    background-color: #dc3545;
 }
 
-.custom-toast-success { background-color: #28a745; }
-.custom-toast-error { background-color: #dc3545; }
-.custom-toast-warning { background-color: #ffc107; color: #333;} /* Warning text usually dark */
-.custom-toast-info { background-color: #17a2b8; }
+/* 新增样式 */
+.stats-box {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 30px;
+}
 
+.genre-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #f8f9fa;
+}
 
-/* Live Status Animation */
-.animate-pulse {
+.genre-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.recent-box {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.progress {
+    background-color: #e9ecef;
+}
+
+.recent-song-card {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px 15px;
+    min-width: 250px;
+    transition: background-color 0.3s;
+    cursor: default;
+}
+
+.recent-song-card:hover {
+    background-color: #e9ecef;
+}
+
+.recent-song-info {
+    flex-grow: 1;
+}
+
+.recent-song-title {
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: #6f42c1;
+}
+
+.recent-song-artist {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* 直播相关样式 */
+#liveButton, .live-card, #liveCard {
+    position: relative;
+    overflow: hidden;
+}
+
+#liveButton::after, .live-card::after, #liveCard::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: radial-gradient(circle, rgba(255,0,0,0.4) 0%, rgba(255,0,0,0) 70%);
+    border-radius: 50%;
     animation: pulse 2s infinite;
+    z-index: -1;
+}
+
+.pulse-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(255,0,0,0.2) 0%, rgba(255,0,0,0) 70%);
+    border-radius: 10px;
+    animation: pulse 2s infinite;
+    z-index: 0;
 }
 
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        transform: scale(0.8);
+        opacity: 0.7;
     }
-    70% {
-        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    50% {
+        transform: scale(1.2);
+        opacity: 0.3;
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        transform: scale(0.8);
+        opacity: 0.7;
     }
 }
 
-/* Specific styles for live status card on index.html */
-.live-status-card {
-    background-color: #f8f9fa;
+.animate-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+.live-card {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
     border-radius: 10px;
-    padding: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
 }
 
-.live-status-card .live-title {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    color: #343a40;
+.live-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
 }
 
-.live-status-card .live-message {
-    font-size: 1rem;
+.badge.bg-purple {
+    background-color: #6f42c1;
+}
+
+/* 点歌时间样式 */
+.recent-time {
+    font-size: 0.8rem;
     color: #6c757d;
-    margin-bottom: 20px;
+    margin-top: 3px;
 }
 
-.live-status-card .live-btn {
-    font-size: 1.1rem;
-    padding: 10px 20px;
-}
-
-/* Table header sort indicators */
-#songTable th {
-    cursor: pointer;
-    position: relative;
-    padding-right: 25px; /* Space for icon */
-}
-
-#songTable th.sorted-asc::after {
-    content: ' ▲'; /* Up arrow */
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-#songTable th.sorted-desc::after {
-    content: ' ▼'; /* Down arrow */
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Host Bio Style */
-.host-bio {
-    background-color: #e9ecef;
+/* 点歌规则框样式 */
+.rules-box {
+    background-color: #e6f7ff; /* 淡蓝色背景 */
+    border: 1px solid #91d5ff; /* 边框 */
     border-radius: 8px;
-    padding: 15px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-.host-bio p {
-    margin-bottom: 5px;
-    line-height: 1.4;
-    color: #495057;
+
+.rules-box h3 {
+    color: #1890ff; /* 标题蓝色 */
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
 }
-.host-bio p:last-child {
+
+.rules-box h3 i {
+    margin-right: 10px;
+    font-size: 1.5rem;
+}
+
+.rules-box ul {
+    list-style-type: disc; /* 圆点列表 */
+    padding-left: 25px;
     margin-bottom: 0;
 }
 
-
-/* --- 动态效果样式 --- */
-
-/* 鼠标拖尾效果 (Liquid-like) */
-.mouse-trail-dot {
-    position: fixed;
-    pointer-events: none; /* 确保不阻挡鼠标事件 */
-    border-radius: 50%;
-    opacity: 0; /* 初始透明度为0，通过JS设置 */
-    transform: translate(-50%, -50%) scale(0); /* 初始缩放为0 */
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 平滑过渡 */
-    z-index: 999; /* 确保在其他元素之上 */
+.rules-box ul li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    color: #333;
 }
 
-/* 飘屏下雪效果 */
+/* 飘屏下雪特效 */
 .floating-emoji {
     position: fixed;
-    top: -50px; /* 从屏幕顶部外面开始 */
-    color: rgba(255, 255, 255, 0.8); /* 白色半透明 */
-    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* 简单阴影 */
-    pointer-events: none; /* 不响应鼠标事件 */
-    user-select: none; /* 不可选择 */
-    opacity: 0;
-    /* 动画通过JS动态设置duration和delay */
-    animation-name: snowfall;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-    z-index: 1000; /* 确保在鼠标拖尾之上 */
+    top: -50px; /* Start above the viewport */
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.8;
+    color: #ffd700; /* Gold color */
+    animation: floatDown linear infinite;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Soft glow */
 }
 
-@keyframes snowfall {
+@keyframes floatDown {
     0% {
-        transform: translate(0, 0) scale(0.8);
+        transform: translate(var(--x-drift, 0), 0);
         opacity: 0;
     }
-    10% {
-        opacity: 0.8; /* 快速出现 */
+    5% {
+        opacity: 0.8;
     }
-    90% {
+    95% {
         opacity: 0.8;
     }
     100% {
-        transform: translate(var(--x-drift), 100vh) scale(0.8); /* 垂直飘落并带有水平偏移 */
-        opacity: 0; /* 到底部时渐隐 */
+        transform: translate(var(--x-drift, 0), calc(100vh + 50px)); /* End below the viewport */
+        opacity: 0;
     }
 }
 
+/* 视频更新提示 */
+.video-update-alert {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    max-width: 350px;
+    z-index: 1000;
+    animation: slideIn 0.5s ease-out;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    border-left: 4px solid #6f42c1;
+}
 
-/* 媒体查询 (Media Queries) for responsiveness */
-@media (max-width: 767.98px) {
-    .navbar-brand {
-        font-size: 1.2rem;
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.video-update-content {
+    display: flex;
+    align-items: center;
+}
+
+.video-thumbnail {
+    width: 80px;
+    height: 60px;
+    border-radius: 5px;
+    margin-right: 15px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-thumbnail i {
+    font-size: 24px;
+    color: #6f42c1;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px 10px;
     }
-    .navbar-nav .nav-link {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+    
+    h1 {
+        font-size: 1.5rem;
     }
-    .custom-toast {
-        font-size: 14px;
-        min-width: unset;
-        width: 90%;
-        left: 5%;
-        transform: translateX(0);
-    }
+    
     .table th, .table td {
         padding: 8px 10px;
         font-size: 14px;
     }
+    
+    .custom-toast {
+        min-width: 250px;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
     .stats-box > div {
         flex-direction: column;
         align-items: center;
     }
+    
     .stats-box .d-flex > div {
         margin-bottom: 10px;
         width: 100%;
     }
+    
     .recent-box {
         margin-top: 20px;
     }
+    
     .navbar-collapse .d-flex {
         margin-top: 10px;
         width: 100%;
         justify-content: center;
+    }
+    
+    .video-update-alert {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .btn-primary, .btn-danger, .btn-purple {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .custom-toast {
+        min-width: 200px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .recent-song-card {
+        width: 100%;
+    }
+    
+    .live-card {
+        padding: 15px;
+    }
+    
+    .live-card .btn {
+        width: 100%;
     }
 }
