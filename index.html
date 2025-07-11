@@ -102,64 +102,6 @@
             updateHomeLiveStatus();
 
             // --- 动态效果代码 ---
-            // 鼠标指针动态效果 (Liquid-like, Colorful, Speed-influenced)
-            let lastMouseX = 0;
-            let lastMouseY = 0;
-            let lastTimestamp = 0;
-            const trailColors = ['#FFC0CB', '#FFD700', '#ADFF2F', '#87CEFA', '#FF69B4', '#FF4500', '#DA70D6']; // 彩色方案
-            let colorIndex = 0;
-
-            function initMouseTrail() {
-                document.addEventListener('mousemove', (e) => {
-                    const now = Date.now();
-                    const dx = e.clientX - lastMouseX;
-                    const dy = e.clientY - lastMouseY;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    const deltaTime = now - lastTimestamp;
-                    const speed = distance / deltaTime; // 像素/毫秒
-
-                    lastMouseX = e.clientX;
-                    lastMouseY = e.clientY;
-                    lastTimestamp = now;
-
-                    // 根据速度调整生成频率和大小
-                    const minDotSize = 8;
-                    const maxDotSize = 25; // 限制最大大小
-                    const baseOpacity = 0.6;
-
-                    // 速度系数，可以调整以改变对大小的影响
-                    const speedFactor = Math.min(speed / 0.5, 1); // 将速度映射到0-1，0.5是一个阈值
-                    const dotSize = minDotSize + (maxDotSize - minDotSize) * speedFactor;
-                    const dotOpacity = baseOpacity + (1 - baseOpacity) * speedFactor * 0.5; // 速度快时更实
-
-                    // 每帧只生成一个点，或者根据速度跳过一些帧，模拟高频生成
-                    if (speed > 0.1 || Math.random() < 0.1) { // 即使速度慢，也随机生成一些点
-                        const trail = document.createElement('div');
-                        trail.className = 'mouse-trail-dot';
-                        trail.style.left = `${e.clientX}px`;
-                        trail.style.top = `${e.clientY}px`;
-
-                        // 随机选择颜色
-                        trail.style.backgroundColor = trailColors[colorIndex % trailColors.length];
-                        colorIndex++;
-
-                        trail.style.width = `${dotSize}px`;
-                        trail.style.height = `${dotSize}px`;
-                        trail.style.opacity = dotOpacity;
-                        trail.style.transform = `translate(-50%, -50%) scale(1)`; // 初始放大到正常大小
-
-                        document.body.appendChild(trail);
-
-                        // 动画结束后移除元素
-                        setTimeout(() => {
-                            trail.style.opacity = 0;
-                            trail.style.transform = `translate(-50%, -50%) scale(0.5)`; // 渐隐并缩小
-                            trail.addEventListener('transitionend', () => trail.remove(), {once: true});
-                        }, 500 + (speedFactor * 300)); // 存在时间根据速度略微调整
-                    }
-                });
-            }
-
             // 飘屏下雪动态效果
             function initFloatingEmojis() {
                 const emoji = '⛰️'; // 使用您指定的符号
@@ -199,7 +141,6 @@
             }
 
             // 调用初始化函数
-            initMouseTrail();
             initFloatingEmojis();
             // --- 动态效果代码结束 ---
         });
@@ -292,7 +233,7 @@
             const livePeriod2 = { start: 18*60, end: 19*60+30 };
             
             return (currentMinutes >= livePeriod1.start && currentMinutes <= livePeriod1.end) ||
-                   (currentMinutes >= livePeriod2.start && currentMinutes >= livePeriod2.start && currentMinutes <= livePeriod2.end);
+                   (currentMinutes >= livePeriod2.start && currentMinutes <= livePeriod2.end);
         }
     </script>
 </body>
