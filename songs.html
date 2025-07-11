@@ -35,17 +35,6 @@
     <div class="container mt-4">
         <h1>枝枝的歌单</h1>
         
-        <div class="rules-box mt-4 p-4 bg-white rounded shadow mb-4">
-            <h3 class="mb-3">点歌规则 <i class="bi bi-music-note-list"></i></h3>
-            <ul>
-                <li>请先在歌单中查找您想听的歌曲，确认枝枝是否会唱。</li>
-                <li>选中歌曲后，点击歌曲行即可自动复制歌曲信息（歌名 - 歌手）。</li>
-                <li>将复制的歌曲信息发送到直播间点歌即可。</li>
-                <li>请遵守直播间管理规定，文明点歌，感谢您的支持！</li>
-                <li>若随机点歌功能抽到您不喜欢的歌曲，可以再次点击尝试。</li>
-            </ul>
-        </div>
-
         <div class="row mb-3">
             <div class="col-md-8">
                 <input type="text" id="searchInput" class="form-control" placeholder="搜索歌曲、歌手或风格...">
@@ -293,7 +282,8 @@
             
             songs.forEach(song => {
                 const row = document.createElement('tr');
-                row.setAttribute('data-song-info', `${song['歌名'] || ''} - ${song['歌手'] || ''}`);
+                // 这里只传递歌名，因为复制的格式现在是“点歌 - 歌名”
+                row.setAttribute('data-song-info-name', `${song['歌名'] || ''}`); 
                 
                 row.innerHTML = `
                     <td>${song['歌名'] || '-'}</td>
@@ -318,13 +308,16 @@
                         return;
                     }
                     
-                    // 获取歌曲信息
-                    const songInfo = this.getAttribute('data-song-info') || '';
+                    // 获取歌曲名
+                    const songName = this.getAttribute('data-song-info-name') || '';
                     
-                    if (!songInfo) return;
+                    if (!songName) return;
+                    
+                    // 构造复制内容
+                    const copyContent = `点歌 - ${songName}`;
                     
                     // 复制到剪贴板
-                    copyToClipboard(songInfo);
+                    copyToClipboard(copyContent);
                     
                     // 添加复制成功动画
                     this.classList.add('copied');
@@ -333,16 +326,13 @@
                     }, 1500);
                     
                     // 保存到最近点歌
-                    const parts = songInfo.split(' - ');
-                    if (parts.length >= 2) {
-                        saveRecentSong({
-                            '歌名': parts[0] || '未知歌曲',
-                            '歌手': parts[1] || '未知歌手'
-                        });
-                    }
+                    saveRecentSong({
+                        '歌名': songName,
+                        '歌手': '（列表点击）' // 标记为列表点击，不显示原歌手
+                    });
                     
                     // 显示提示
-                    showToast('已复制: ' + songInfo);
+                    showToast('已复制 ' + copyContent + ' 到剪贴板请前往直播间点歌');
                 });
             });
         }
@@ -405,22 +395,21 @@
             const randomIndex = Math.floor(Math.random() * allSongs.length);
             const randomSong = allSongs[randomIndex];
             
-            // 创建复制内容
+            // 构造复制内容
             const songName = randomSong['歌名'] || '未知歌曲';
-            const artist = randomSong['歌手'] || '未知歌手';
-            const songInfo = `${songName} - ${artist}`;
+            const copyContent = `点歌 - ${songName}`;
             
             // 保存到最近点歌
             saveRecentSong({
                 '歌名': songName,
-                '歌手': artist
+                '歌手': '（随机点歌）' // 标记为随机点歌
             });
             
             // 复制到剪贴板
-            copyToClipboard(songInfo);
+            copyToClipboard(copyContent);
             
             // 显示提示
-            showToast('已复制: ' + songInfo);
+            showToast('已复制 ' + copyContent + ' 到剪贴板请前往直播间点歌');
         }
 
         // 通用复制到剪贴板函数
