@@ -180,58 +180,47 @@ h1 {
 
 /* --- 动态效果样式 --- */
 
-/* 鼠标拖尾效果 */
-.mouse-trail {
+/* 鼠标拖尾效果 (Liquid-like) */
+.mouse-trail-dot {
     position: fixed;
-    pointer-events: none; /* 确保不会阻挡鼠标事件 */
-    background-color: rgba(108, 92, 231, 0.7); /* 紫色系半透明 */
+    pointer-events: none; /* 确保不阻挡鼠标事件 */
     border-radius: 50%;
-    width: 8px;
-    height: 8px;
-    opacity: 0;
-    transform: translate(-50%, -50%); /* 居中显示 */
-    animation: fadeOutTrail 0.8s forwards; /* 动画持续时间和结束后保留最后一帧 */
+    opacity: 0; /* 初始透明度为0，通过JS设置 */
+    transform: translate(-50%, -50%) scale(0); /* 初始缩放为0 */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* 平滑过渡 */
     z-index: 999; /* 确保在其他元素之上 */
 }
 
-@keyframes fadeOutTrail {
-    from {
-        opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: translate(-50%, -50%) scale(0.5);
-    }
-}
-
-/* 飘屏效果 */
+/* 飘屏下雪效果 */
 .floating-emoji {
     position: fixed;
-    bottom: -50px; /* 从屏幕底部外面开始 */
+    top: -50px; /* 从屏幕顶部外面开始 */
     color: rgba(255, 255, 255, 0.8); /* 白色半透明 */
     text-shadow: 0 0 5px rgba(0,0,0,0.5); /* 简单阴影 */
     pointer-events: none; /* 不响应鼠标事件 */
     user-select: none; /* 不可选择 */
     opacity: 0;
-    animation: floatUpAndFade var(--duration) linear forwards; /* 动画名称、持续时间、速度曲线、结束后保留最后一帧 */
+    /* 动画通过JS动态设置duration和delay */
+    animation-name: snowfall;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     z-index: 1000; /* 确保在鼠标拖尾之上 */
 }
 
-@keyframes floatUpAndFade {
+@keyframes snowfall {
     0% {
-        transform: translateY(0);
+        transform: translate(0, 0) scale(0.8);
         opacity: 0;
     }
     10% {
-        opacity: 1; /* 快速出现 */
+        opacity: 0.8; /* 快速出现 */
     }
     90% {
-        opacity: 1;
+        opacity: 0.8;
     }
     100% {
-        transform: translateY(-100vh); /* 向上飘出屏幕 */
-        opacity: 0;
+        transform: translate(var(--x-drift), 100vh) scale(0.8); /* 垂直飘落并带有水平偏移 */
+        opacity: 0; /* 到底部时渐隐 */
     }
 }
 
